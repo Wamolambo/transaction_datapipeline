@@ -1,17 +1,14 @@
-from airflow import DAG
 from airflow.exceptions import AirflowException
-from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
-from datetime import datetime, timedelta
-from airflow import DAG
-from airflow.operators.bash import BashOperator
-from airflow.operators.python import PythonOperator
-from datetime import datetime, timedelta
 import requests
 import pandas as pd
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timedelta
+from airflow import DAG
+
+import mysql.connector
 
 # Load the .env file
 load_dotenv()
@@ -39,6 +36,7 @@ with DAG(
 
     # Task 1: Extract data from API
     def extract_data(**kwargs):
+        """Extract data from API"""
         # API details
         api_url = os.getenv('api_url')
         headers = {"Content-Type": "application/json", "x-api-key": os.getenv('api_key')}
@@ -61,6 +59,8 @@ with DAG(
 
     # Task 2: Transform data
     def transform_data(**kwargs):
+        """Transform the data"""
+
         # create dataframe from csv
         df = pd.read_csv('/tmp/raw_transactions.csv')
 
@@ -96,8 +96,8 @@ with DAG(
         # Create dataframe from transformed csv
         df = pd.read_csv('/tmp/transformed_transactions.csv')
 
-        # Connect to database
-        engine = create_engine(os.getenv('db_url'))
+        # Create database engine
+        engine = create_engine(f"mysql+pymysql://{os.getenv("login")}:{os.getenv("password")}@{os.getenv("host")}/{os.getenv("database")}")
 
         # Load data to MySQL
         df.to_sql('transactions', con=engine, if_exists='replace', index=False)
@@ -105,11 +105,9 @@ with DAG(
         print("Data successfully loaded into MySQL!")
 
 
-    from datetime import datetime, timedelta
-    from airflow import DAG
 
-    import mysql.connector
     def create_table(**kwargs):
+        """Create table in database"""
         db = mysql.connector.connect(
             host=os.getenv('host'),
             user=os.getenv('login'),
@@ -133,7 +131,8 @@ with DAG(
         cursor.close()
         db.close()
 
-    def execute_query(query: str,query_name: str = None) -> str:
+    def execute_query(query: str,query_name: str = None):
+        """Execute query in database"""
         db = mysql.connector.connect(
             host=os.getenv('host'),
             user=os.getenv('login'),
@@ -151,6 +150,7 @@ with DAG(
         db.close()
 
     def transactions_per_prodcatergory(**kwargs):
+        "Create transactions_per_prodcatergory table in database"
         query_name='transactions_per_prodcatergory'
         query = '''            
             CREATE OR REPLACE VIEW transactions_per_productcategory AS
@@ -162,6 +162,7 @@ with DAG(
         execute_query(query, query_name)
 
     def top5_transactions(**kwargs):
+        "Create top5_transactions table in database"
         query_name='top5_transactions'
         query = '''            
             CREATE OR REPLACE VIEW top5_transactions AS
@@ -176,6 +177,7 @@ with DAG(
         execute_query(query, query_name)
 
     def monthlyspend_trends(**kwargs):
+        "Create monthlyspend_trends table in database"
         query_name='monthlyspend_trends'
         query = '''            
             CREATE OR REPLACE VIEW monthlyspend_trends AS
