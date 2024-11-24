@@ -4,26 +4,62 @@ This project simulates an ETL pipeline for a Data Engineer Technical Assessment.
 An image of the ETL pipeline is shown below:
 
 ![image](img/etl.png)
+
+## Prerequisites
+The following requirements are needed to run this project:
+1. Ensure that python 3.10 or higher is installed in your machine. 
+You can check your python version using:
+```bash
+python3 --version 
+```
+If python is not installed, run the following:
+```bash
+sudo apt update
+sudo apt install python3 
+```
+2. You need MySQL installed and configured on to run database operations. 
+To check if MySQL is installed run the following:
+```bash
+mysql --version 
+```
+If MySQL is not installed, run the following:
+```bash
+sudo apt update
+sudo apt install mysql-server
+```
+After installing MySQL, you can log in to the MySQL shell using:
+```bash
+mysql -u root -p
+```
+Create a MySQL database (e.g., planet42) and a user (optional):
+```bash
+CREATE DATABASE planet42_assessment;
+CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON planet42 TO 'user'@'localhost';
+FLUSH PRIVILEGES;
+```
+Note: The user, localhost and password can be changed to your preference.
+Once the database secrets has been created, Add them to the ```.env`` file in the root directory.`
 ## Setup Instructions
 1. Clone the repository:
 ```bash
-   git git@github.com:Wamolambo/transaction_datapipeline.git
-   cd transaction_data_workflow
+git git@github.com:Wamolambo/transaction_datapipeline.git
+cd transaction_data_workflow
    ```
-2. Install dependencies:
+2.  Create a virtual environment:
 ```bash
-    python3 -m venv etl_env
-    source etl_env/bin/activate  # Linux/Mac
-    etl_env\Scripts\activate     # Windows
-    pip install -r requirements.txt
+python3 -m venv etl_env
+source etl_env/bin/activate  # Linux/Mac
+   ```
+3.  Install dependencies:
+```bash
+pip install -r requirements.txt
 ```
-3. Set up MySQL:
+4. Source setup script:
 ```bash
-CREATE DATABASE planet42;
-   ```
-
-```bash
-CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON planet42_assessment.* TO 'user'@'localhost';
-FLUSH PRIVILEGES;
-   ```
+chmod +x run.sh
+source airflow_setip.sh
+``` 
+Access the Airflow UI:
+http://localhost:8080
+Note: The default username and password are "admin" and "admin", respectively.
