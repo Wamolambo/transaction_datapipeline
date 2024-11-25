@@ -43,13 +43,14 @@ Once the database secrets has been created, Add them to the ```.env`` file in th
 ## Setup Instructions
 1. Clone the repository:
 ```bash
+cd /root
 git git@github.com:Wamolambo/transaction_datapipeline.git
 cd transaction_data_workflow
    ```
 2.  Create a virtual environment:
 ```bash
 python3 -m venv etl_env
-source etl_env/bin/activate  # Linux/Mac
+source etl_env/bin/activate 
    ```
 3.  Install dependencies:
 ```bash
